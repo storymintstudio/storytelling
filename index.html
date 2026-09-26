@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>For You</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --morning1:#F6D7A7; --morning2:#F4B860; --morning3:#A8DADC;
+  --sunset1:#E98B73; --sunset2:#7C5C8E;
+  --night1:#0B1026; --night2:#151B3D; --night3:#252B59;
+  --accent:#FFE9A8;
+  --mx:50%; --my:50%;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:inherit;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  font-family:'Inter',sans-serif;color:#EDEBF7;
+  background:var(--night1);overflow-x:hidden;
+}
+h1,h2,.serif{font-family:'Cormorant Garamond',serif;font-weight:500;}
+.section{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6vh 6vw;overflow:hidden}
+p.lede{max-width:560px;font-size:clamp(1rem,2vw,1.15rem);line-height:1.8;color:#D8D5EC;font-weight:300}
+h1.title{font-size:clamp(2.2rem,6vw,4.2rem);letter-spacing:.02em;margin:.4rem 0}
+.eyebrow{letter-spacing:.35em;font-size:.75rem;color:var(--accent);text-transform:uppercase;font-weight:400}
+
+/* cursor glow */
+.glow{position:fixed;inset:0;pointer-events:none;z-index:5;mix-blend-mode:screen;
+  background:radial-gradient(320px circle at var(--mx) var(--my), rgba(255,233,168,.18), transparent 70%);
+  transition:background .05s linear;}
+
+/* starfield */
+.stars-layer{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.star{position:absolute;background:#fff;border-radius:50%;opacity:0;animation:twinkle 4s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.9}}
+
+/* mountains (css shapes) */
+.mtns{position:absolute;left:0;right:0;bottom:0;height:45%;z-index:2}
+.mtn{position:absolute;bottom:0;left:-10%;width:120%;height:100%}
+.mtn.m1{clip-path:polygon(0 100%,0 55%,15% 40%,30% 58%,45% 30%,60% 52%,78% 25%,100% 48%,100% 100%);background:#171c3c;opacity:.9}
+.mtn.m2{clip-path:polygon(0 100%,0 70%,20% 50%,38% 68%,55% 42%,72% 63%,88% 38%,100% 60%,100% 100%);background:#0d1130;opacity:.95}
+
+/* section 1 */
+.beginning{background:linear-gradient(180deg,#050615,#0B1026 60%,#0d1130)}
+.beginning .scrolldown{margin-top:3rem;font-size:.7rem;letter-spacing:.2em;color:#a9a6c9;opacity:.7}
+
+/* section 2 effort */
+.effort{background:linear-gradient(180deg,#0d1130,#151B3D)}
+.lines{max-width:640px;margin:1.2rem 0 2.4rem}
+.lines .line{font-family:'Cormorant Garamond',serif;font-size:clamp(1.3rem,3vw,2rem);opacity:0;transform:translateY(14px);transition:opacity .8s ease,transform .8s ease}
+.lines.in-view .line{opacity:1;transform:none}
+.lines.in-view .line:nth-child(1){transition-delay:.1s}
+.lines.in-view .line:nth-child(2){transition-delay:.5s}
+.lines.in-view .line:nth-child(3){transition-delay:.9s}
+.lines.in-view .line:nth-child(4){transition-delay:1.3s}
+.path-track{display:flex;gap:2.2rem;flex-wrap:wrap;justify-content:center;margin-top:1rem}
+.checkpoint{width:56px;height:56px;border-radius:50%;background:rgba(255,233,168,.08);border:1px solid rgba(255,233,168,.35);
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;cursor:pointer;transition:transform .3s,box-shadow .3s}
+.checkpoint:hover{transform:scale(1.12);box-shadow:0 0 22px rgba(255,233,168,.4)}
+
+/* section 3 garden */
+.garden{background:radial-gradient(ellipse at 50% 20%,#1c2354,#0B1026 75%);min-height:100vh}
+.garden-field{position:relative;width:100%;max-width:760px;height:56vh;margin-top:1.5rem}
+.garden-item{position:absolute;font-size:2rem;cursor:pointer;filter:drop-shadow(0 0 10px rgba(255,233,168,.25));
+  animation:float 6s ease-in-out infinite;transition:transform .3s}
+.garden-item:hover{transform:scale(1.25)}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+
+/* section 4 day-night */
+.daynight-wrap{height:400vh;position:relative}
+.daynight-sticky{position:sticky;top:0;height:100vh;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  background:linear-gradient(180deg,var(--morning3),var(--morning1));transition:background .1s linear}
+.celestial{position:absolute;width:120px;height:120px;border-radius:50%;top:14%;left:50%;transform:translateX(-50%);
+  background:radial-gradient(circle,#fff8dc,var(--morning2));box-shadow:0 0 80px 20px rgba(244,184,96,.5);transition:all .2s linear}
+.dn-text{position:relative;z-index:3;font-family:'Cormorant Garamond',serif;font-size:clamp(1.4rem,3.4vw,2.3rem);
+  max-width:600px;text-align:center;padding:0 1.5rem;text-shadow:0 2px 18px rgba(0,0,0,.35)}
+
+/* section 5 final */
+.final{background:radial-gradient(ellipse at 50% 30%,var(--night3),var(--night1) 80%);min-height:130vh}
+.final .moon{width:130px;height:130px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#dcd6f0);
+  box-shadow:0 0 90px 25px rgba(255,255,255,.25);margin-bottom:1.5rem}
+.click-star{position:relative;display:inline-block;font-size:1.6rem;margin:0 .35rem;cursor:pointer;animation:twinkle 3s ease-in-out infinite}
+.star-msg{margin-top:1.6rem;min-height:1.8rem;font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--accent);
+  opacity:0;transition:opacity .6s}
+.star-msg.show{opacity:1}
+.final .signature{margin-top:2.5rem;font-size:.8rem;letter-spacing:.1em;color:#a9a6c9;font-style:italic}
+
+/* fade-up utility */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 1s ease,transform 1s ease}
+.reveal.in-view{opacity:1;transform:none}
+
+/* gate + intro */
+#gate,#intro{position:fixed;inset:0;z-index:50;background:#050512;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:2rem;transition:opacity 1.1s ease}
+#gate input{background:transparent;border:none;border-bottom:1px solid rgba(255,233,168,.5);color:#EDEBF7;
+  font-family:'Inter',sans-serif;font-size:1rem;padding:.5rem;text-align:center;letter-spacing:.15em;outline:none;width:220px}
+#gate button{margin-top:1.2rem;background:none;border:1px solid var(--accent);color:var(--accent);padding:.5rem 1.4rem;
+  border-radius:30px;font-size:.8rem;letter-spacing:.1em;cursor:pointer;font-family:'Inter',sans-serif}
+#gate p{font-size:.75rem;color:#8f8cae;margin-top:1rem;min-height:1rem}
+#intro p{font-family:'Cormorant Garamond',serif;font-size:clamp(1.1rem,3vw,1.6rem);max-width:520px;opacity:0;
+  animation:fadeIn 2.4s ease forwards}
+@keyframes fadeIn{to{opacity:1}}
+.hidden-off{opacity:0!important;pointer-events:none}
+
+/* music toggle */
+#musicToggle{position:fixed;bottom:22px;right:22px;z-index:20;width:44px;height:44px;border-radius:50%;
+  background:rgba(255,233,168,.1);border:1px solid rgba(255,233,168,.4);color:var(--accent);cursor:pointer;font-size:1.05rem}
+
+@media (max-width:640px){ .path-track{gap:1.4rem} .garden-field{height:48vh} }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <span class="eyebrow">Before you continue</span>
+  <p style="margin:.8rem 0 1.4rem;color:#c9c6e0;font-size:.85rem">This was made privately, for someone specific.</p>
+  <input id="pwInput" type="password" placeholder="passcode" autocomplete="off">
+  <button id="pwBtn">Enter</button>
+  <p id="pwErr"></p>
+</div>
+
+<div id="intro" class="hidden-off"><p id="introLine">This is for someone who probably doesn't realise how much they do.</p></div>
+
+<div class="glow"></div>
+<div class="stars-layer" id="starsLayer"></div>
+<button id="musicToggle" title="Ambient sound">♫</button>
+
+<section class="section beginning" id="s1">
+  <div class="mtns"><div class="mtn m2"></div><div class="mtn m1"></div></div>
+  <span class="eyebrow reveal">Across the quiet distance</span>
+  <h1 class="title reveal">Some efforts are quiet.</h1>
+  <p class="lede reveal">But that doesn't make them small.</p>
+  <div class="scrolldown reveal">SCROLL TO SEE SOMETHING ↓</div>
+</section>
+
+<section class="section effort" id="s2">
+  <span class="eyebrow reveal">The effort</span>
+  <div class="lines reveal">
+    <p class="line">You show up.</p>
+    <p class="line">You follow through.</p>
+    <p class="line">You manage things.</p>
+    <p class="line">You keep going.</p>
+  </div>
+  <p class="lede reveal">And sometimes, that's more impressive than you realise.</p>
+  <div class="path-track reveal" id="checkpoints"></div>
+  <p class="star-msg" id="cpMsg" style="margin-top:1.2rem"></p>
+</section>
+
+<section class="section garden" id="s3">
+  <span class="eyebrow reveal">The world she loves</span>
+  <h2 class="title reveal" style="font-size:clamp(1.6rem,4vw,2.6rem)">A small memory garden</h2>
+  <p class="lede reveal" style="margin-bottom:.5rem">Touch anything that catches your eye.</p>
+  <div class="garden-field" id="gardenField"></div>
+  <p class="star-msg" id="gardenMsg"></p>
+</section>
+
+<section class="daynight-wrap" id="s4">
+  <div class="daynight-sticky" id="dnSticky">
+    <div class="mtns"><div class="mtn m2"></div><div class="mtn m1"></div></div>
+    <div class="celestial" id="dnSun"></div>
+    <p class="dn-text" id="dnText">You spend your days doing so much.</p>
+  </div>
+</section>
+
+<section class="section final" id="s5">
+  <div class="moon"></div>
+  <span class="eyebrow reveal">Before you leave…</span>
+  <h1 class="title reveal">Remember this:</h1>
+  <p class="lede reveal">You don't have to be perfect to be doing something worth being proud of.</p>
+  <div style="margin-top:2rem" id="starRow"></div>
+  <p class="star-msg" id="starMsg"></p>
+  <p class="lede reveal" style="margin-top:2rem;font-family:'Cormorant Garamond',serif;font-size:1.4rem">
+    ✨<br>Keep going.<br>Keep creating.<br>Keep being you.
+  </p>
+  <p class="lede reveal" style="margin-top:1rem">I'm always rooting for you.</p>
+  <p class="signature"> -Someone who believes in you <hr> made by Storymint Studio </p>
+</section>
+
+<script>
+// ---------- password gate + intro ----------
+const SITE_PASSWORD = "starrynight"; // change before deploying
+const gate=document.getElementById('gate'), intro=document.getElementById('intro'), err=document.getElementById('pwErr');
+document.getElementById('pwBtn').onclick=tryPw;
+document.getElementById('pwInput').addEventListener('keydown',e=>{if(e.key==='Enter')tryPw();});
+function tryPw(){
+  const v=document.getElementById('pwInput').value.trim().toLowerCase();
+  if(v===SITE_PASSWORD.toLowerCase()){
+    gate.style.opacity=0; setTimeout(()=>gate.style.display='none',1100);
+    intro.classList.remove('hidden-off');
+    setTimeout(()=>{ intro.style.opacity=0; setTimeout(()=>intro.style.display='none',1100); },3600);
+  } else { err.textContent='That\'s not quite it.'; }
+}
+
+// ---------- starfield ----------
+function makeStars(container,count,maxSize){
+  for(let i=0;i<count;i++){
+    const s=document.createElement('div'); s.className='star';
+    const size=Math.random()*maxSize+1;
+    s.style.width=s.style.height=size+'px';
+    s.style.top=Math.random()*100+'%'; s.style.left=Math.random()*100+'%';
+    s.style.animationDelay=(Math.random()*4)+'s';
+    container.appendChild(s);
+  }
+}
+makeStars(document.getElementById('starsLayer'),90,2.2);
+
+// ---------- reveal on scroll ----------
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('in-view'); });
+},{threshold:.35});
+document.querySelectorAll('.reveal,.lines').forEach(el=>io.observe(el));
+
+// ---------- checkpoints ----------
+const CP=[
+  {icon:'🌱',title:'Consistency',text:'For showing up even when nobody is watching.'},
+  {icon:'🎨',title:'Creativity',text:'For bringing your own touch to what you do.'},
+  {icon:'🎵',title:'Balance',text:'For keeping everything moving together.'},
+  {icon:'✨',title:'Discipline',text:'For following the little things that make the big things work.'}
+];
+const cpWrap=document.getElementById('checkpoints'), cpMsg=document.getElementById('cpMsg');
+CP.forEach(c=>{
+  const d=document.createElement('div'); d.className='checkpoint'; d.textContent=c.icon;
+  d.onclick=()=>{ cpMsg.textContent=c.title+' — '+c.text; cpMsg.classList.add('show'); };
+  cpWrap.appendChild(d);
+});
+
+// ---------- memory garden ----------
+const GARDEN=[
+  {icon:'🌸',text:'For the little things you make beautiful.',x:'10%',y:'15%'},
+  {icon:'🎨',text:"Your creativity doesn't have to be loud to be meaningful.",x:'70%',y:'8%'},
+  {icon:'🎵',text:'Some people create noise. Some people create harmony.',x:'25%',y:'55%'},
+  {icon:'🍃',text:'Keep growing at your own pace.',x:'80%',y:'50%'},
+  {icon:'⭐',text:'And yes… someone notices.',x:'50%',y:'75%'}
+];
+const gField=document.getElementById('gardenField'), gMsg=document.getElementById('gardenMsg');
+GARDEN.forEach((g,i)=>{
+  const d=document.createElement('div'); d.className='garden-item'; d.textContent=g.icon;
+  d.style.left=g.x; d.style.top=g.y; d.style.animationDelay=(i*0.6)+'s';
+  d.onclick=()=>{ gMsg.textContent=g.text; gMsg.classList.add('show'); };
+  gField.appendChild(d);
+});
+
+// ---------- day -> night scroll ----------
+function hexLerp(a,b,t){
+  const pa=parseInt(a.slice(1),16), pb=parseInt(b.slice(1),16);
+  const ar=(pa>>16)&255,ag=(pa>>8)&255,ab=pa&255, br=(pb>>16)&255,bg=(pb>>8)&255,bb=pb&255;
+  const r=Math.round(ar+(br-ar)*t),g=Math.round(ag+(bg-ag)*t),bl=Math.round(ab+(bb-ab)*t);
+  return `rgb(${r},${g},${bl})`;
+}
+const dnSticky=document.getElementById('dnSticky'), dnSun=document.getElementById('dnSun'), dnText=document.getElementById('dnText'), dnWrap=document.getElementById('s4');
+const DN_COPY=[[0,'You spend your days doing so much.'],[.32,'And even when the day gets tiring…'],[.62,'you still keep going.'],[.85,'I hope you remember that your effort matters too.']];
+let lastLine='';
+function updateDayNight(){
+  const rect=dnWrap.getBoundingClientRect();
+  const total=rect.height-window.innerHeight;
+  let t=total>0 ? (-rect.top)/total : 0; t=Math.max(0,Math.min(1,t));
+  let top,bottom;
+  if(t<.4){ const k=t/.4; top=hexLerp('#A8DADC','#7C5C8E',k); bottom=hexLerp('#F6D7A7','#E98B73',k); }
+  else if(t<.7){ const k=(t-.4)/.3; top=hexLerp('#7C5C8E','#151B3D',k); bottom=hexLerp('#E98B73','#0B1026',k); }
+  else { top=bottom='#0B1026'; }
+  dnSticky.style.background=`linear-gradient(180deg, ${top}, ${bottom})`;
+  const sunY=14+t*46; dnSun.style.top=sunY+'%';
+  dnSun.style.opacity= t<.75 ? 1-Math.max(0,(t-.55))/.2 : 0;
+  let line=DN_COPY[0][1];
+  for(const [th,txt] of DN_COPY){ if(t>=th) line=txt; }
+  if(line!==lastLine){ lastLine=line; dnText.style.opacity=0; setTimeout(()=>{dnText.textContent=line; dnText.style.opacity=1;},250); }
+}
+window.addEventListener('scroll',updateDayNight,{passive:true}); updateDayNight();
+
+// ---------- cursor glow ----------
+window.addEventListener('mousemove',e=>{
+  document.documentElement.style.setProperty('--mx',e.clientX+'px');
+  document.documentElement.style.setProperty('--my',e.clientY+'px');
+});
+
+// ---------- clickable stars, final section ----------
+const STAR_MSGS=[
+  'You did better than you think.','Your effort didn\'t go unnoticed.',
+  'Take a moment to be proud of yourself.',"You're allowed to slow down too.",
+  'Small steps still count.','You are seen.','It\'s okay to rest.','Someone is proud of you.'
+];
+const starRow=document.getElementById('starRow'), starMsg=document.getElementById('starMsg');
+STAR_MSGS.forEach((m,i)=>{
+  const s=document.createElement('span'); s.className='click-star'; s.textContent='✦';
+  s.style.animationDelay=(i*0.4)+'s';
+  s.onclick=()=>{ starMsg.textContent=m; starMsg.classList.add('show'); };
+  starRow.appendChild(s);
+});
+
+// ---------- ambient music (Web Audio, no external files) ----------
+let actx,on=false,osc1,osc2,gain,filt;
+document.getElementById('musicToggle').onclick=function(){
+  if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)();
+  if(!on){
+    osc1=actx.createOscillator(); osc2=actx.createOscillator();
+    osc1.type='sine'; osc2.type='sine'; osc1.frequency.value=110; osc2.frequency.value=164.8;
+    filt=actx.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=800;
+    gain=actx.createGain(); gain.gain.value=0;
+    osc1.connect(filt); osc2.connect(filt); filt.connect(gain); gain.connect(actx.destination);
+    osc1.start(); osc2.start();
+    gain.gain.linearRampToValueAtTime(0.045,actx.currentTime+2);
+    this.textContent='♪'; on=true;
+  } else {
+    gain.gain.linearRampToValueAtTime(0,actx.currentTime+1);
+    setTimeout(()=>{ osc1.stop(); osc2.stop(); },1100);
+    this.textContent='♫'; on=false;
+  }
+};
+</script>
+</body>
+</html>
